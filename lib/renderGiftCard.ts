@@ -65,12 +65,13 @@ export function renderGiftCard({
 
       if (template.photoBox && img) {
         const box = toCanvasSpace(template.photoBox, W, H);
+        const drawBox = transparentHole ? growRect(box, 0.14) : box;
         const user = await loadImage(img);
         ctx.save();
         ctx.translate(box.x + box.width / 2, box.y + box.height / 2);
         if (box.rotation) ctx.rotate((box.rotation * Math.PI) / 180);
         if (transparentHole) {
-          drawImageCover9(ctx, user, box);
+          drawImageCover9(ctx, user, drawBox);
         } else {
           roundedRectPath(
             ctx,
@@ -81,7 +82,7 @@ export function renderGiftCard({
             box.radius,
           );
           ctx.clip();
-          drawImageCover9(ctx, user, box);
+          drawImageCover9(ctx, user, drawBox);
         }
         ctx.restore();
         if (debug)
@@ -269,6 +270,17 @@ function toCanvasSpace(box: BoxRect, W: number, H: number): BoxRect {
     width: box.width * kx,
     height: box.height * ky,
     radius: box.radius * kx,
+    rotation: box.rotation,
+  };
+}
+
+function growRect(box: BoxRect, margin: number): BoxRect {
+  return {
+    x: box.x - box.width * margin,
+    y: box.y - box.height * margin,
+    width: box.width * (1 + margin * 2),
+    height: box.height * (1 + margin * 2),
+    radius: box.radius,
     rotation: box.rotation,
   };
 }
