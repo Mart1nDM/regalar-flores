@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: "Caveat", "Segoe Print", "Comic Sans MS", cursive;
+  --font-body: "Nunito", "Avenir", system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-pastel-cream font-body text-stone-700 antialiased;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(255, 227, 224, 0.7), transparent 40%),
+    radial-gradient(circle at 85% 12%, rgba(216, 233, 201, 0.8), transparent 42%),
+    radial-gradient(circle at 60% 85%, rgba(255, 243, 176, 0.65), transparent 45%),
+    linear-gradient(165deg, #fff9e6 0%, #fffdf5 50%, #f4fbea 100%);
+  background-attachment: fixed;
+}
+
+::selection {
+  background: #ffed8a;
+  color: #7c4d00;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+.animate-breathe {
+  animation: breathe 4.5s ease-in-out infinite;
+}

@@ -1,0 +1,70 @@
+la idea de la web, es preparar un entorno en vercel primeramente para crear una pagina web
+que permita al usuario entrar y preparar unas "flores virtuales".
+
+flujo de uso:
+1* el usuario entra a la pagina y lo que ve es una landing animada y simple, con colores pasteles pero llamativos,
+un breve texto introductorio que describe que tipo de flores puede enviar y una serie de 3 pasos explicativos que
+se muestran a medida de que el usuario scrollea hacia abajo, para encontrarse un boton que diga "enviar flores".
+
+2* una vez haya presionado el boton, se le redigira a una nueva pestaña con codigo personalizado estilo:
+"enviarflores.vercel.app/flores/1234567890" o algo parecido, para que si sale de la pagina pueda volver a entrar y continuar
+preparando las flores.
+
+3* una vez este en el menu de preparacion de flores, el usuario usara flores amarillas; ademas de poder incluir un mensaje personalizado en 
+caso de asi quererlo y sino que se genere un mensaje prederminado en base a una lista de mensajes ya predefinidos que hay guardados 
+en el sistema, tambien si el usuario quiere puede adjuntar una foto con motivo de ser mas detallista con el regalo a enviar 
+la cual aparecera al momento de recibir el regalo final.
+
+4* "armado del regalo una vez el usuario termine de configurar sus flores". una vez el usuario termine de configurar el regalo personalizado
+se le generará un link para enviar a la persona que quiere que reciba el regalo, el cual cuando lo abra va a tener el formato que está
+en la imagen llamada "formato_con_foto" siempre y cuando haya incluido una foto personalizada sin importar si incluyo un mensaje o no
+y sino incluyo imagen personalizada se usara el formato usando la imagen llamada "formato_sin_foto"; en el "formato_con_foto" debes reemplazar
+el fondo que aparece en el recuadro con la imagen del usuario y el mensaje debe aparecer en el recuadro que se encuentra abajo
+
+
+=============================================
+    AQUI EMPIEZA EL CONTEXTO TECNOLOGICO
+=============================================
+
+Actúa como un Desarrollador Full-Stack Experto (React / Next.js / TailwindCSS).
+Tu objetivo es crear el código completo para una aplicación web desplegada en Vercel que permite a los usuarios crear y enviar "flores virtuales amarillas" personalizadas para el Día de la Primavera.
+
+A continuación, te detallo la arquitectura, el flujo de usuario y la lógica de renderizado:
+
+1. Arquitectura y Stack Tecnológico Requerido:
+
+Framework: Next.js (App Router recomendado para manejar rutas dinámicas fácilmente).
+
+Estilos: TailwindCSS (usar una paleta de colores pasteles llamativos, con predominancia del amarillo y verde suave).
+
+Animaciones: Framer Motion (para la landing page y transiciones suaves).
+
+Almacenamiento temporal: No es necesaria una base de datos compleja. Puedes codificar los datos en la URL (Base64) o usar un backend ligero como Supabase/Firebase si lo consideras necesario para guardar la imagen y el mensaje.
+
+2. Flujo del Usuario y Rutas:
+
+Ruta / (Landing Page): Una página de inicio animada. Debe tener un título introductorio claro. Al hacer scroll, deben revelarse 3 pasos explicativos mediante animaciones simples (fade in / slide up). Al final del scroll, un botón principal que diga "Enviar flores".
+
+Ruta dinámica de edición /crear/[id]: Al presionar "Enviar flores", se genera un ID único (UUID) y se redirige aquí. Esto permite que el usuario actualice la página sin perder la sesión.
+
+Ruta de visualización /regalo/[id]: La URL final que se genera para compartir con el destinatario.
+
+3. Lógica de la Vista de Edición (/crear/[id]):
+
+Temática: Exclusivamente flores amarillas.
+
+Inputs del usuario:
+
+Mensaje: Un Textarea para mensaje personalizado. Debe incluir un botón de "Generar mensaje aleatorio" que extraiga frases de un array predefinido en el código.
+
+Foto (Opcional): Un input para subir un archivo de imagen.
+
+4. Lógica de Renderizado del Regalo (/regalo/[id]):
+
+El renderizado final depende de una condición estricta basada en si el creador subió una foto o no.
+
+Condición A (Con Foto): Se usará una plantilla (basada en un diseño tipo polaroid). La imagen subida por el usuario debe renderizarse usando CSS object-fit: cover dentro de un contenedor que simula la foto polaroid. El texto del mensaje debe aparecer dentro de un contenedor decorativo con bordes ondulados en la parte inferior.
+
+Condición B (Sin Foto): Se usará una plantilla alternativa. En el lugar donde iría la foto, se renderizará una gran flor amarilla central (asset estático). El texto del mensaje se ubicará en el mismo contenedor decorativo en la parte inferior.
+
+Por favor, genera la estructura del proyecto, los componentes principales de React y las funciones de utilidad para manejar el estado y la generación del enlace.
