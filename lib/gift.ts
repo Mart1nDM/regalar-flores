@@ -61,20 +61,5 @@ export function decodeStoredGift(segment: string): GiftState | null {
 export function giftUrlFor(state: GiftState): string {
   const base =
     typeof window === "undefined" ? "" : window.location.origin;
-  if (typeof window !== "undefined") {
-    const token =
-      typeof crypto !== "undefined" && "randomUUID" in crypto
-        ? crypto.randomUUID()
-        : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-    try {
-      window.localStorage.setItem(
-        `${GIFT_STORAGE_PREFIX}${token}`,
-        JSON.stringify(state),
-      );
-      return `${base}/regalo/${token}`;
-    } catch {
-      // Fall back to a portable URL if localStorage is unavailable.
-    }
-  }
   return `${base}/regalo/${encodeGift(state)}`;
 }

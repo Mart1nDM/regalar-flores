@@ -1,5 +1,5 @@
-const MAX_DIM = 640;
-const QUALITY = 0.66;
+const MAX_DIM = 512;
+const QUALITY = 0.6;
 
 export function compressImageFile(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
