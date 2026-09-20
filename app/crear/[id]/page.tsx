@@ -6,8 +6,13 @@ import { motion } from "framer-motion";
 import PetalField from "@/components/PetalField";
 import CropModal from "@/components/CropModal";
 import { clipMessage, MESSAGE_MAX_LENGTH, randomMessage } from "@/lib/messages";
-import { compressImageFile } from "@/lib/compressImage";
-import { giftUrlFor } from "@/lib/gift";
+import { compressImageFile, fitDataUrlToBudget } from "@/lib/compressImage";
+import {
+  encodeGift,
+  giftUrlFor,
+  MAX_GIFT_URL_CHARS,
+  type GiftState,
+} from "@/lib/gift";
 import { TEMPLATES } from "@/lib/templates";
 import { useGiftImage } from "@/hooks/useGiftImage";
 
@@ -100,10 +105,34 @@ export default function CreatePage() {
     }
   };
 
-  const handleGenerate = useCallback(() => {
+  const handleGenerate = useCallback(async () => {
     const safeMessage = clipMessage(message.trim() || randomMessage());
-    const gift = { m: safeMessage, ...(img ? { img } : {}) };
+    let payloadImg = img;
+    if (payloadImg) {
+      const head = `${window.location.origin}/regalo/`;
+      const textCost = encodeGift({ m: safeMessage }).length;
+      const imgChars = Math.floor(
+        (MAX_GIFT_URL_CHARS - head.length - textCost) / 1.4,
+      );
+      if (imgChars > 0) {
+        payloadImg = await fitDataUrlToBudget(payloadImg, imgChars);
+      }
+    }
+    const gift: GiftState = {
+      m: safeMessage,
+      ...(payloadImg ? { img: payloadImg } : {}),
+    };
     const url = giftUrlFor(gift);
+    if (url.length > MAX_GIFT_URL_CHARS) {
+      const fallback = giftUrlFor({ m: safeMessage });
+      if (fallback.length > MAX_GIFT_URL_CHARS) return;
+      window.alert(
+        "La foto era muy pesada y no entraba en el link, así que va sin foto. Probá con otra imagen. 📷",
+      );
+      setFinalUrl(fallback);
+      navigator.clipboard?.writeText(fallback).catch(() => {});
+      return;
+    }
     setFinalUrl(url);
     navigator.clipboard?.writeText(url).catch(() => {});
   }, [message, img]);

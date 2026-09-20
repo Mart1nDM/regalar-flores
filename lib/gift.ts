@@ -5,6 +5,8 @@ export interface GiftState {
 
 const GIFT_STORAGE_PREFIX = "regalo-flores-gift-";
 
+export const MAX_GIFT_URL_CHARS = 10000;
+
 function toBase64Url(b64: string): string {
   return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
 }
