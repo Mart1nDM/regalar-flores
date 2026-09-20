@@ -30,9 +30,12 @@ export async function GET(
     if (!/^[a-f0-9]{14}$/.test(id)) {
       return NextResponse.json({ error: "not-found" }, { status: 404 });
     }
-    const raw = await redis().get<string>(`gift:${id}`);
+    const raw = await redis().get(`gift:${id}`);
     if (!raw) return NextResponse.json({ error: "not-found" }, { status: 404 });
-    const parsed = JSON.parse(raw) as { m?: string; img?: string };
+    const parsed =
+      typeof raw === "string"
+        ? (JSON.parse(raw) as { m?: string; img?: string })
+        : (raw as { m?: string; img?: string });
     if (typeof parsed.m !== "string") {
       return NextResponse.json({ error: "not-found" }, { status: 404 });
     }
