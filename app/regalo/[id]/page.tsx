@@ -267,6 +267,16 @@ export default function GiftPage() {
           {opened ? "Descargar imagen ⬇️" : "Abrí el regalo primero"}
         </motion.button>
 
+        <motion.a
+          href="/"
+          className="mt-3 w-full rounded-full bg-white/80 px-8 py-4 text-center text-base font-extrabold text-rose-500 shadow-soft transition hover:bg-white active:scale-95"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          Enviá la tuya 💐
+        </motion.a>
+
         <motion.p
           className="mt-5 text-xs text-stone-400"
           initial={{ opacity: 0 }}
