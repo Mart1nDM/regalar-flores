@@ -71,6 +71,13 @@ export function renderGiftCard({
         ctx.translate(box.x + box.width / 2, box.y + box.height / 2);
         if (box.rotation) ctx.rotate((box.rotation * Math.PI) / 180);
         if (transparentHole) {
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(
+            -drawBox.width / 2,
+            -drawBox.height / 2,
+            drawBox.width,
+            drawBox.height,
+          );
           drawImageCover9(ctx, user, drawBox);
         } else {
           roundedRectPath(
