@@ -1,5 +1,5 @@
-const MAX_DIM = 512;
-const QUALITY = 0.6;
+const MAX_DIM = 1400;
+const QUALITY = 0.9;
 
 const FIT_CAPS = [640, 480, 360, 288, 224, 176, 132];
 const FIT_QUALITIES = [0.7, 0.62, 0.55, 0.48, 0.42];

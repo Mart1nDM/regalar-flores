@@ -39,8 +39,31 @@ export default function GiftPage() {
   const burst = useMemo(makeBurst, []);
 
   useEffect(() => {
-    setGift(decodeGift(segment) ?? decodeStoredGift(segment));
-    setReady(true);
+    let cancelled = false;
+    setReady(false);
+    const embedded = decodeGift(segment) ?? decodeStoredGift(segment);
+    if (embedded) {
+      setGift(embedded);
+      setReady(true);
+      return;
+    }
+    if (segment.length < 40) {
+      fetch(`/api/gift/${encodeURIComponent(segment)}`, { cache: "no-store" })
+        .then((res) => (res.ok ? res.json() : Promise.reject(new Error("no"))))
+        .then((data) => {
+          if (cancelled || !data || typeof data.m !== "string") return;
+          setGift({ m: data.m, img: data.img });
+        })
+        .catch(() => {})
+        .finally(() => {
+          if (!cancelled) setReady(true);
+        });
+    } else {
+      setReady(true);
+    }
+    return () => {
+      cancelled = true;
+    };
   }, [segment]);
 
   const template = gift

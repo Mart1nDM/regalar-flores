@@ -38,6 +38,7 @@ export default function CreatePage() {
   const [finalUrl, setFinalUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
   const [downloadingPrev, setDownloadingPrev] = useState(false);
   const [debugCalib, setDebugCalib] = useState(false);
@@ -107,34 +108,57 @@ export default function CreatePage() {
 
   const handleGenerate = useCallback(async () => {
     const safeMessage = clipMessage(message.trim() || randomMessage());
-    let payloadImg = img;
-    if (payloadImg) {
-      const head = `${window.location.origin}/regalo/`;
-      const textCost = encodeGift({ m: safeMessage }).length;
-      const imgChars = Math.floor(
-        (MAX_GIFT_URL_CHARS - head.length - textCost) / 1.4,
-      );
-      if (imgChars > 0) {
-        payloadImg = await fitDataUrlToBudget(payloadImg, imgChars);
+    setGenerating(true);
+    try {
+      if (img) {
+        try {
+          const res = await fetch("/api/gift", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ m: safeMessage, img }),
+          });
+          const data = await res.json();
+          if (res.ok && data.id) {
+            const url = `${window.location.origin}/regalo/${data.id}`;
+            setFinalUrl(url);
+            navigator.clipboard?.writeText(url).catch(() => {});
+            return;
+          }
+        } catch {
+          // caiga al link embebido
+        }
       }
+      let payloadImg = img;
+      if (payloadImg) {
+        const head = `${window.location.origin}/regalo/`;
+        const textCost = encodeGift({ m: safeMessage }).length;
+        const imgChars = Math.floor(
+          (MAX_GIFT_URL_CHARS - head.length - textCost) / 1.4,
+        );
+        if (imgChars > 0) {
+          payloadImg = await fitDataUrlToBudget(payloadImg, imgChars);
+        }
+      }
+      const gift: GiftState = {
+        m: safeMessage,
+        ...(payloadImg ? { img: payloadImg } : {}),
+      };
+      const url = giftUrlFor(gift);
+      if (url.length > MAX_GIFT_URL_CHARS) {
+        const fallback = giftUrlFor({ m: safeMessage });
+        if (fallback.length > MAX_GIFT_URL_CHARS) return;
+        window.alert(
+          "La foto era muy pesada y no entraba en el link, así que va sin foto. Probá con otra imagen. 📷",
+        );
+        setFinalUrl(fallback);
+        navigator.clipboard?.writeText(fallback).catch(() => {});
+        return;
+      }
+      setFinalUrl(url);
+      navigator.clipboard?.writeText(url).catch(() => {});
+    } finally {
+      setGenerating(false);
     }
-    const gift: GiftState = {
-      m: safeMessage,
-      ...(payloadImg ? { img: payloadImg } : {}),
-    };
-    const url = giftUrlFor(gift);
-    if (url.length > MAX_GIFT_URL_CHARS) {
-      const fallback = giftUrlFor({ m: safeMessage });
-      if (fallback.length > MAX_GIFT_URL_CHARS) return;
-      window.alert(
-        "La foto era muy pesada y no entraba en el link, así que va sin foto. Probá con otra imagen. 📷",
-      );
-      setFinalUrl(fallback);
-      navigator.clipboard?.writeText(fallback).catch(() => {});
-      return;
-    }
-    setFinalUrl(url);
-    navigator.clipboard?.writeText(url).catch(() => {});
   }, [message, img]);
 
   const handleCopy = async () => {
@@ -276,11 +300,12 @@ export default function CreatePage() {
           <div className="hidden md:block">
             <motion.button
               type="button"
-              onClick={handleGenerate}
-              className="mt-8 w-full rounded-full bg-gradient-to-br from-sunflower-400 to-sunflower-600 px-8 py-5 text-lg font-extrabold text-white shadow-polaroid transition hover:scale-[1.02] hover:brightness-105 active:scale-95"
+              onClick={() => void handleGenerate()}
+              disabled={generating}
+              className="mt-8 w-full rounded-full bg-gradient-to-br from-sunflower-400 to-sunflower-600 px-8 py-5 text-lg font-extrabold text-white shadow-polaroid transition hover:scale-[1.02] hover:brightness-105 active:scale-95 disabled:opacity-60"
               whileTap={{ scale: 0.96 }}
             >
-              Generar link para regalar 🌼
+              {generating ? "Guardando tu regalo… ⏳" : "Generar link para regalar 🌼"}
             </motion.button>
             {saved && (
               <p className="mt-3 text-center text-xs text-emerald-500">
@@ -371,11 +396,12 @@ export default function CreatePage() {
         <div className="w-full md:hidden">
           <motion.button
             type="button"
-            onClick={handleGenerate}
-            className="mt-8 w-full rounded-full bg-gradient-to-br from-sunflower-400 to-sunflower-600 px-8 py-5 text-lg font-extrabold text-white shadow-polaroid transition hover:scale-[1.02] hover:brightness-105 active:scale-95"
+            onClick={() => void handleGenerate()}
+            disabled={generating}
+            className="mt-8 w-full rounded-full bg-gradient-to-br from-sunflower-400 to-sunflower-600 px-8 py-5 text-lg font-extrabold text-white shadow-polaroid transition hover:scale-[1.02] hover:brightness-105 active:scale-95 disabled:opacity-60"
             whileTap={{ scale: 0.96 }}
           >
-            Generar link para regalar 🌼
+            {generating ? "Guardando tu regalo… ⏳" : "Generar link para regalar 🌼"}
           </motion.button>
           {saved && (
             <p className="mt-3 text-center text-xs text-emerald-500">

@@ -5,8 +5,8 @@ import Cropper, { type Area } from "react-easy-crop";
 import { motion } from "framer-motion";
 import { PHOTO_ASPECT } from "@/lib/templates";
 
-const TARGET_W = 1000;
-const TARGET_H = 900;
+const TARGET_W = 1400;
+const TARGET_H = 1260;
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -37,7 +37,7 @@ async function cropToDataUrl(src: string, px: Area): Promise<string> {
     TARGET_W,
     TARGET_H,
   );
-  return canvas.toDataURL("image/jpeg", 0.82);
+  return canvas.toDataURL("image/jpeg", 0.9);
 }
 
 interface CropModalProps {
